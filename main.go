@@ -15,7 +15,7 @@ import (
 var (
 	botToken string
 	chatID   int64
-	debtors  = make([]string, 2)
+	debtors  = make([]string, 0)
 	// Можете заменить на ID вашего стикера
 	stickerFileID string
 )
@@ -62,7 +62,7 @@ func main() {
 	for {
 		now := time.Now().In(location)
 		// Вычисляем время до следующих 15:00
-		next := time.Date(now.Year(), now.Month(), now.Day(), 20, 20, 0, 0, location)
+		next := time.Date(now.Year(), now.Month(), now.Day(), 17, 15, 0, 0, location)
 		if now.After(next) {
 			// Если текущее время после 15:00, переходим на следующий день
 			next = next.Add(24 * time.Hour)
