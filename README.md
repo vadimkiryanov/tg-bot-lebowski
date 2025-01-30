@@ -1,1 +1,1 @@
-# go-tg-lebowski
+# tg-bot-lebowski
