@@ -36,6 +36,7 @@ func init() {
 	var err error
 	fmt.Printf("chatIDStr: %v\n", chatIDStr)
 	fmt.Printf("debtors: %v\n", debtors)
+	fmt.Printf("botToken: %v\n", botToken)
 
 	if chatID, err = strconv.ParseInt(chatIDStr, 10, 64); err != nil {
 		logrus.Fatalf("failed to parse chat ID: %v", err)
@@ -46,7 +47,7 @@ func init() {
 func main() {
 	bot, err := tgbotapi.NewBotAPI(botToken) // получаем экземпляр бота
 	if err != nil {
-		log.Panic(err)
+		logrus.Fatalf("error creating bot: %v", err)
 	}
 
 	bot.Debug = true                                          // включаем режим отладки
@@ -62,7 +63,7 @@ func main() {
 	for {
 		now := time.Now().In(location)
 		// Вычисляем время до следующих 15:00
-		next := time.Date(now.Year(), now.Month(), now.Day(), 17, 15, 0, 0, location)
+		next := time.Date(now.Year(), now.Month(), now.Day(), 20, 50, 0, 0, location)
 		if now.After(next) {
 			// Если текущее время после 15:00, переходим на следующий день
 			next = next.Add(24 * time.Hour)
