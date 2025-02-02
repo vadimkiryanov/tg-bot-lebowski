@@ -31,7 +31,7 @@ func init() {
 	botToken = os.Getenv("TG_BOT_TOKEN")
 	stickerFileID = os.Getenv("TG_STICKER_FILE_ID")
 
-	debtors = append(debtors, os.Getenv("1_DEBTOR"), os.Getenv("2_DEBTOR")) // добавляем должников
+	debtors = append(debtors, os.Getenv("DEBTOR_1"), os.Getenv("DEBTOR_2")) // добавляем должников
 
 	var err error
 	fmt.Printf("chatIDStr: %v\n", chatIDStr)
