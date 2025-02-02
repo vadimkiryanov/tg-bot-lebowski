@@ -27,18 +27,8 @@ jobs:
         echo "1_DEBTOR=${{ secrets.DEBTOR_1}}" >> .env
         echo "2_DEBTOR=${{ secrets.DEBTOR_2}}" >> .env
 
-    - name: Copy files to server
-      uses: appleboy/scp-action@v0.1.3
-      with:
-        host: ${{ env.SSH_HOST }}
-        port: ${{ env.SSH_PORT }}
-        username: ${{ env.SSH_USER }}
-        key: ${{ env.SSH_KEY }}
-        source: ".env,Dockerfile,go.mod,cmd,README.md"
-        target: "/home/${{ env.SSH_USER }}/tg-bot"
-
     - name: Deploy via SSH
-      uses: appleboy/ssh-action@v0.1.10
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ env.SSH_HOST }}
         port: ${{ env.SSH_PORT }}
