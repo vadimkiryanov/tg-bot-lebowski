@@ -7,7 +7,7 @@ on:
 env:
   SSH_HOST: ${{ secrets.SELECTEL_SSH_HOST }}
   SSH_USER: ${{ secrets.SELECTEL_SSH_USER }}
-  SSH_PORT: ${{ secrets.SELECTEL_SSH_PORT || 22 }}
+  SSH_PORT: ${{ 22 }}
   SSH_KEY: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }}
   DOCKER_IMAGE: tg-bot-lebowski
 
