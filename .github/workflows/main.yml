@@ -4,13 +4,6 @@ on:
     push:
         branches: [main]
 
-env:
-    HOST: ${{ secrets.SELECTEL_HOST }}
-    USER: ${{ secrets.USER_NAME }}
-    PORT: ${{ 22 }}
-    SSH_SERVER_KEY: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }}
-    DOCKER_IMAGE: tg-bot-lebowski
-
 jobs:
     deploy:
         runs-on: ubuntu-latest
@@ -26,12 +19,12 @@ jobs:
                       cd ~/tg-bot-lebowski # Переход в директорию с проектом на сервере
                       git pull origin main # Вытягивание последних изменений из ветки main
                       git status # Проверка состояния git-репозитория
-                      docker build -t $DOCKER_IMAGE .
-                            docker stop $DOCKER_IMAGE || true
-                            docker rm $DOCKER_IMAGE || true
+                      docker build -t tg-bot-lebowski .
+                            docker stop tg-bot-lebowski || true
+                            docker rm tg-bot-lebowski || true
                             docker run -d \
-                              --name $DOCKER_IMAGE \
+                              --name tg-bot-lebowski \
                               -p 80:80 \
                               --env-file .env \
                               --restart=unless-stopped \
-                              $DOCKER_IMAGE
+                              tg-bot-lebowski
