@@ -1,47 +1,37 @@
 name: Deploy to Selectel
 
 on:
-  push:
-    branches: [main]
+    push:
+        branches: [main]
 
 env:
-  SSH_HOST: ${{ secrets.SELECTEL_SSH_HOST }}
-  SSH_USER: ${{ secrets.SELECTEL_SSH_USER }}
-  SSH_PORT: ${{ 22 }}
-  SSH_KEY: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }}
-  DOCKER_IMAGE: tg-bot-lebowski
+    HOST: ${{ secrets.SELECTEL_HOST }}
+    USER: ${{ secrets.USER_NAME }}
+    PORT: ${{ 22 }}
+    SSH_SERVER_KEY: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }}
+    DOCKER_IMAGE: tg-bot-lebowski
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Prepare .env from Secrets
-      run: |
-        echo "TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN}}" > .env
-        echo "TG_CHAT_ID=${{ secrets.TG_CHAT_ID}}" >> .env
-        echo "TG_STICKER_FILE_ID=${{ secrets.TG_STICKER_FILE_ID}}" >> .env
-        echo "1_DEBTOR=${{ secrets.DEBTOR_1}}" >> .env
-        echo "2_DEBTOR=${{ secrets.DEBTOR_2}}" >> .env
-
-    - name: Deploy via SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.SSH_HOST }}
-        port: ${{ env.SSH_PORT }}
-        username: ${{ env.SSH_USER }}
-        key: ${{ env.SSH_KEY }}
-        script: |
-          cd /home/${{ env.SSH_USER }}/tg-bot
-          docker build -t $DOCKER_IMAGE .
-          docker stop $DOCKER_IMAGE || true
-          docker rm $DOCKER_IMAGE || true
-          docker run -d \
-            --name $DOCKER_IMAGE \
-            -p 80:80 \
-            --env-file .env \
-            --restart=unless-stopped \
-            $DOCKER_IMAGE
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy using ssh # Название шага: Деплой с использованием SSH
+              uses: appleboy/ssh-action@master # Использование готового действия для SSH-подключения
+              with:
+                  host: ${{ secrets.SELECTEL_HOST }} # Хост (сервер) для подключения, берется из секретов Github
+                  username: ${{ secrets.USER_NAME }} # Имя пользователя для SSH, берется из секретов Github
+                  key: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }} # Приватный ключ для SSH, берется из секретов Github
+                  port: 22 # Порт для SSH-подключения (по умолчанию 22)
+                  script: |
+                      cd ~/tg-bot-lebowski # Переход в директорию с проектом на сервере
+                      git pull origin main # Вытягивание последних изменений из ветки main
+                      git status # Проверка состояния git-репозитория
+                      docker build -t $DOCKER_IMAGE .
+                            docker stop $DOCKER_IMAGE || true
+                            docker rm $DOCKER_IMAGE || true
+                            docker run -d \
+                              --name $DOCKER_IMAGE \
+                              -p 80:80 \
+                              --env-file .env \
+                              --restart=unless-stopped \
+                              $DOCKER_IMAGE
