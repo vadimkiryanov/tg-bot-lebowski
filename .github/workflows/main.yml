@@ -14,7 +14,7 @@ env:
 jobs:
     deploy:
         runs-on: ubuntu-latest
-        steps:
+        steps: # Шаги
             - name: Deploy using ssh # Название шага: Деплой с использованием SSH
               uses: appleboy/ssh-action@master # Использование готового действия для SSH-подключения
               with:
