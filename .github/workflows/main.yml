@@ -1,0 +1,37 @@
+name: Deploy to Selectel
+
+on:
+    push:
+        branches: [main]
+
+env:
+    HOST: ${{ secrets.SELECTEL_HOST }}
+    USER: ${{ secrets.USER_NAME }}
+    PORT: ${{ 22 }}
+    SSH_SERVER_KEY: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }}
+    DOCKER_IMAGE: tg-bot-lebowski
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy using ssh # Название шага: Деплой с использованием SSH
+              uses: appleboy/ssh-action@master # Использование готового действия для SSH-подключения
+              with:
+                  host: ${{ secrets.SELECTEL_HOST }} # Хост (сервер) для подключения, берется из секретов Github
+                  username: ${{ secrets.USER_NAME }} # Имя пользователя для SSH, берется из секретов Github
+                  key: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }} # Приватный ключ для SSH, берется из секретов Github
+                  port: 22 # Порт для SSH-подключения (по умолчанию 22)
+                  script: |
+                      cd ~/tg-bot-lebowski # Переход в директорию с проектом на сервере
+                      git pull origin main # Вытягивание последних изменений из ветки main
+                      git status # Проверка состояния git-репозитория
+                      docker build -t $DOCKER_IMAGE .
+                            docker stop $DOCKER_IMAGE || true
+                            docker rm $DOCKER_IMAGE || true
+                            docker run -d \
+                              --name $DOCKER_IMAGE \
+                              -p 80:80 \
+                              --env-file .env \
+                              --restart=unless-stopped \
+                              $DOCKER_IMAGE
