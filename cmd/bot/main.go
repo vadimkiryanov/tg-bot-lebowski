@@ -53,7 +53,7 @@ func main() {
 	for {
 		now := time.Now().In(location)
 		// Вычисляем время до следующих 15:00
-		next := time.Date(now.Year(), now.Month(), now.Day(), 16, 00, 0, 0, location)
+		next := time.Date(now.Year(), now.Month(), now.Day(), 9, 23, 0, 0, location)
 		if now.After(next) {
 			// Если текущее время после 15:00, переходим на следующий день
 			next = next.Add(24 * time.Hour)
@@ -115,8 +115,11 @@ func initBot() error {
 func sendStickerAndMessage(bot *tgbotapi.BotAPI, chatID int64, username string) error {
 
 	// Отправляем сообщение
-	msgText := fmt.Sprintf("%s Как дела, Лебовски?", username)
+	msgText := fmt.Sprintf("Как дела, <a href=\"https://t.me/%s\">Лебовски</a>?", username) // формируем сообщение", username)
+
 	msg := tgbotapi.NewMessage(chatID, msgText)
+	msg.ParseMode = "HTML" // Включаем поддержку HTML-разметки
+	msg.DisableWebPagePreview = true
 	_, err := bot.Send(msg)
 	if err != nil {
 		return fmt.Errorf("error sending message: %v", err)
