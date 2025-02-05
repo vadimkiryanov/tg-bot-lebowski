@@ -53,7 +53,7 @@ func main() {
 	for {
 		now := time.Now().In(location)
 		// Вычисляем время до следующих 15:00
-		next := time.Date(now.Year(), now.Month(), now.Day(), 9, 23, 0, 0, location)
+		next := time.Date(now.Year(), now.Month(), now.Day(), 16, 00, 0, 0, location)
 		if now.After(next) {
 			// Если текущее время после 15:00, переходим на следующий день
 			next = next.Add(24 * time.Hour)
