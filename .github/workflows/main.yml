@@ -16,9 +16,22 @@ jobs:
                   key: ${{ secrets.SELECTEL_SSH_PRIVATE_KEY }} # Приватный ключ для SSH, берется из секретов Github
                   port: 22 # Порт для SSH-подключения (по умолчанию 22)
                   script: |
-                      cd ~/tg-bot-lebowski # Переход в директорию с проектом на сервере
-                      git pull origin main # Вытягивание последних изменений из ветки main
+                      # Переход в директорию с проектом на сервере
+                      cd ~/tg-bot-lebowski 
+                      
+                      # Вытягивание последних изменений из ветки main
+                      git pull origin main 
                       git status # Проверка состояния git-репозитория
+
+                      # Полная очистка Docker
+                      docker rm -f $(docker ps -aq) 2>/dev/null || true
+                      docker rmi -f $(docker images -aq) 2>/dev/null || true
+                      docker builder prune -af
+                      docker volume prune -f
+                      docker network prune -f
+                      docker system prune -af --volumes
+
+                      # Сборка и запуск нового контейнера
                       docker build -t tg-bot-lebowski .
                             docker stop tg-bot-lebowski || true
                             docker rm tg-bot-lebowski || true
