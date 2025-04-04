@@ -1,0 +1,28 @@
+{
+	"name": "go-tg-lebovsky",
+	"version": "1.0.0",
+	"description": "Telegram bot for debt reminders",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "node dist/index.js",
+		"dev": "ts-node src/index.ts",
+		"docker:build:run": "npm run docker:stop && npm run docker:clean && npm run docker:build && npm run docker:run",
+		"docker:run": "docker run --name lebovsky-bot-container --env-file .env lebovsky-bot",
+		"docker:clean": "npm run docker:stop && npm run docker:rm",
+		"docker:stop": "docker stop lebovsky-bot-container || true",
+		"docker:rm": "docker rm lebovsky-bot-container || true",
+		"docker:build": "npm run docker:clean && docker build -t lebovsky-bot ."
+	},
+	"dependencies": {
+		"dotenv": "^16.4.1",
+		"grammy": "^1.21.1",
+		"node-schedule": "^2.1.1"
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.19",
+		"@types/node-schedule": "^2.1.7",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.3.3"
+	}
+}
