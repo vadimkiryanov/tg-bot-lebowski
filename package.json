@@ -8,10 +8,10 @@
 		"start": "node dist/index.js",
 		"dev": "ts-node src/index.ts",
 		"docker:build:run": "npm run docker:stop && npm run docker:clean && npm run docker:build && npm run docker:run",
-		"docker:run": "docker run --name lebovsky-bot-container --env-file .env lebovsky-bot",
+		"docker:run": "docker run --name tg-bot-lebowski --env-file .env lebovsky-bot",
 		"docker:clean": "npm run docker:stop && npm run docker:rm",
-		"docker:stop": "docker stop lebovsky-bot-container || true",
-		"docker:rm": "docker rm lebovsky-bot-container || true",
+		"docker:stop": "docker stop tg-bot-lebowski || true",
+		"docker:rm": "docker rm tg-bot-lebowski || true",
 		"docker:build": "npm run docker:clean && docker build -t lebovsky-bot ."
 	},
 	"dependencies": {

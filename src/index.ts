@@ -4,6 +4,10 @@ import { scheduleJob } from "node-schedule";
 
 config();
 
+////////============================
+
+////////============================
+
 // Константы для времени отправки
 const SEND_HOUR = 16;
 const SEND_MINUTE = 0;
@@ -24,6 +28,39 @@ function formatTime(hours: number, minutes: number): string {
 	const h = hours.toString().padStart(2, "0");
 	const m = minutes.toString().padStart(2, "0");
 	return `${h}:${m}`;
+}
+
+// Функция для получения ответа от AI
+async function getAIResponse(userMessage: string): Promise<string> {
+	const options = {
+		method: "POST",
+		headers: {
+			accept: "application/json",
+			Authorization: `Bearer ${process.env.AI_API_TOKEN}`,
+			"content-type": "application/json",
+		},
+		body: JSON.stringify({
+			model: "deepseek-ai/DeepSeek-R1",
+			messages: [
+				{
+					role: "system",
+					content:
+						"Ты Лебовский, отвечай на вопросы в стиле Лебовского из фильма Большой Лебовский. Используй его манеру речи, отношение к жизни.",
+				},
+				{ role: "user", content: userMessage },
+			],
+		}),
+	};
+
+	try {
+		const response = await fetch(process.env.AI_API_URL || "", options);
+		const data = await response.json();
+		console.log("Ответ: ", data.choices[0].message.content);
+		return data.choices[0].message.content.split("</think>")[1];
+	} catch (error) {
+		console.error("Ошибка при получении ответа от AI:", error);
+		return "Чувак, что-то пошло не так... Давай попробуем позже.";
+	}
 }
 
 // Функция для расчета оставшегося времени до следующей отправки
@@ -91,6 +128,37 @@ async function sendLogMessage(message: string) {
 	}
 }
 
+// Обработка сообщений
+bot.on("message", async (ctx) => {
+	// Проверяем, что сообщение содержит упоминание бота
+	const messageText = ctx.message?.text || "";
+	const botUsername = (await bot.api.getMe()).username;
+
+	if (!messageText.includes(`@${botUsername}`)) return;
+
+	// Получаем текст сообщения без упоминания бота
+	const userMessage = messageText.replace(`@${botUsername}`, "").trim();
+	if (!userMessage) return;
+
+	// Отправляем "печатает"
+	await ctx.replyWithChatAction("typing");
+
+	try {
+		// Получаем ответ от AI
+		const aiResponse = await getAIResponse(userMessage);
+
+		// Отправляем ответ
+		await ctx.reply(aiResponse, {
+			reply_to_message_id: ctx.message.message_id,
+		});
+	} catch (error) {
+		console.error("Ошибка при обработке сообщения:", error);
+		await ctx.reply("Чувак, что-то пошло не так... Давай попробуем позже.", {
+			reply_to_message_id: ctx.message.message_id,
+		});
+	}
+});
+
 // Запускаем бота
 bot.start();
 
@@ -109,7 +177,9 @@ const timeUntilNext = getTimeUntilNextMessage();
 const startMessage =
 	`🤖 *Бот запущен!*\n\n` +
 	`⏳ До следующей отправки: ${timeUntilNext}\n` +
-	`Бот будет отправлять сообщения в чат: https://web.telegram.org/k/#-${process.env.TG_CHAT_ID?.slice(4)}\n` +
+	`Бот будет отправлять сообщения в чат: https://web.telegram.org/k/#-${process.env.TG_CHAT_ID?.slice(
+		4
+	)}\n` +
 	`⏰ Время отправки: ${formatTime(SEND_HOUR, SEND_MINUTE)} по МСК\n`;
 
 sendLogMessage(startMessage);
