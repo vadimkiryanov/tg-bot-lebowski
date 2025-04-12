@@ -1,4 +1,5 @@
 {
+    "type": "commonjs",
 	"name": "go-tg-lebovsky",
 	"version": "1.0.0",
 	"description": "Telegram bot for debt reminders",
@@ -17,7 +18,8 @@
 	"dependencies": {
 		"dotenv": "^16.4.1",
 		"grammy": "^1.21.1",
-		"node-schedule": "^2.1.1"
+		"node-schedule": "^2.1.1",
+		"youtube-transcript": "^1.2.1"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.19",
