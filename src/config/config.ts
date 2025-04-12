@@ -18,7 +18,7 @@ export const aiConfig = {
 
 export const scheduleConfig: RecurrenceSpecObjLit = {
 	hour: 13,
-	minute: 40,
+	minute: 45,
 	tz: "Europe/Moscow",
 };
 
